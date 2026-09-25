@@ -1,29 +1,15 @@
-// Uhr lesen – offline cache. Bump VERSION when files change.
-const VERSION = 'uhr-lesen-v1';
-const FILES = ['./', './index.html', './style.css', './time-phrase.js', './clock.js', './app.js', './icon.svg', './manifest.webmanifest'];
-
-self.addEventListener('install', (e) => {
-  e.waitUntil(caches.open(VERSION).then((c) => c.addAll(FILES)).then(() => self.skipWaiting()));
-});
-
-self.addEventListener('activate', (e) => {
-  e.waitUntil(
-    caches.keys()
-      .then((keys) => Promise.all(keys.filter((k) => k !== VERSION).map((k) => caches.delete(k))))
-      .then(() => self.clients.claim())
-  );
-});
-
-// Cache first, then network (fonts get cached on first online visit).
-self.addEventListener('fetch', (e) => {
-  if (e.request.method !== 'GET') return;
-  e.respondWith(
-    caches.match(e.request).then((hit) => hit || fetch(e.request).then((res) => {
-      if (res.ok || res.type === 'opaque') {
-        const copy = res.clone();
-        caches.open(VERSION).then((c) => c.put(e.request, copy));
-      }
-      return res;
-    }))
+// Uhr lesen moved into the Lernwelt launcher (../launcher/). Devices that installed the old
+// standalone app still have its service worker; browsers fetch this file when they check
+// for an update. It deletes the old offline cache, unregisters itself and reloads open
+// pages, so they land on the redirect in index.html. Only the old app's own caches are
+// touched: the launcher's cache (lernwelt-*) lives on the same site.
+self.addEventListener('install', () => self.skipWaiting());
+self.addEventListener('activate', (event) => {
+  event.waitUntil(
+    (async () => {
+      for (const key of await caches.keys()) if (key.startsWith('uhr-lesen-')) await caches.delete(key);
+      await self.registration.unregister();
+      for (const client of await self.clients.matchAll({ type: 'window' })) client.navigate(client.url);
+    })(),
   );
 });

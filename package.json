@@ -1,0 +1,12 @@
+{
+  "name": "lernwelt-repo",
+  "private": true,
+  "description": "Lernwelt: offline learning apps for children. All apps live in launcher/.",
+  "scripts": {
+    "start": "npm --prefix launcher start",
+    "test": "npm --prefix launcher test"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}

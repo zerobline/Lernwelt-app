@@ -5,9 +5,10 @@
   "icon": "icon.svg",
   "color": "#4A90E2",
   "order": 1,
-  "version": "1.0.0",
+  "version": "2.0.0",
   "files": [
     "style.css",
-    "clock.js"
+    "clock.js",
+    "time-phrase.js"
   ]
 }

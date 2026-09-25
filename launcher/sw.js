@@ -4,7 +4,7 @@
 // - Afterwards: stale-while-revalidate – answer from cache, refresh in the background.
 // Bump VERSION when CORE changes so old caches are dropped.
 
-const VERSION = 'lernwelt-v1';
+const VERSION = 'lernwelt-v2';
 
 const CORE = [
   './',
@@ -18,6 +18,7 @@ const CORE = [
   'src/main.js',
   'src/core/dates.js',
   'src/core/launcher-data.js',
+  'src/core/migrate.js',
   'src/core/profiles.js',
   'src/core/registry.js',
   'src/core/rewards.js',

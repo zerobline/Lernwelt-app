@@ -6,6 +6,7 @@ import { createLauncherData } from '../src/core/launcher-data.js';
 import { REWARDS, REWARD_STEP, unlockedCount, nextReward, availableAvatars, BASE_AVATARS, BACKGROUNDS } from '../src/core/rewards.js';
 import { validateManifest, sortApps, loadRegistry } from '../src/core/registry.js';
 import { dayKey } from '../src/core/dates.js';
+import { migrateLegacy } from '../src/core/migrate.js';
 import { starsForRound, createAppServices } from '../src/services/app-services.js';
 import { gateQuestion } from '../src/screens/gate.js';
 
@@ -190,4 +191,34 @@ test('parent gate question is outside the 1×1', () => {
     assert.ok(q.a >= 12 && q.a <= 19 && q.b >= 3 && q.b <= 9);
     assert.equal(q.answer, q.a * q.b);
   }
+});
+
+test('progress from the old standalone apps is imported once', () => {
+  const b = createMemoryBackend();
+  b.setItem('uhr-lesen-v1', JSON.stringify({ settings: { stufe: 3, speech: false, sound: true }, history: [{ stufe: 3 }] }));
+  b.setItem('einmaleins.v1', JSON.stringify({ level: 2, facts: { '3x4': { box: 4, seen: 5 } }, settings: { timer: 20, voice: false } }));
+  assert.deepEqual(migrateLegacy(b, 'p1'), ['uhr-lesen', 'einmaleins']);
+  const uhr = createStore(b, 'uhr-lesen.p1').get('data');
+  assert.deepEqual(uhr.settings, { stufe: 3 }, 'sound and speech are launcher settings now');
+  assert.equal(uhr.history.length, 1);
+  const emx = createStore(b, 'einmaleins.p1').get('data');
+  assert.equal(emx.level, 2);
+  assert.deepEqual(emx.settings, { timer: 20 });
+  assert.equal(b.getItem('uhr-lesen-v1'), null, 'old entry is moved away');
+  assert.ok(b.getItem('lernwelt._launcher.legacy.uhr-lesen-v1'), 'and kept as a backup');
+
+  // After a reset in the parent area, the old progress does not come back.
+  createStore(b, 'uhr-lesen.p1').clear();
+  assert.deepEqual(migrateLegacy(b, 'p1'), []);
+  assert.equal(createStore(b, 'uhr-lesen.p1').get('data'), null);
+});
+
+test('existing launcher progress wins over old standalone progress', () => {
+  const b = createMemoryBackend();
+  createStore(b, 'einmaleins.p1').set('data', { level: 3 });
+  b.setItem('einmaleins.v1', JSON.stringify({ level: 1 }));
+  b.setItem('uhr-lesen-v1', '{broken');
+  assert.deepEqual(migrateLegacy(b, 'p1'), []);
+  assert.equal(createStore(b, 'einmaleins.p1').get('data').level, 3);
+  assert.equal(b.getItem('uhr-lesen-v1'), null);
 });
