@@ -6,6 +6,7 @@ runs in the browser, and needs no accounts and no backend.
 | App | Folder | What it does |
 | --- | --- | --- |
 | Uhr lesen | [`uhr-lesen/`](uhr-lesen/) | Read an analog clock in spoken German ("Viertel nach drei", "halb vier"). |
+| Lernwelt-Launcher | [`launcher/`](launcher/) | One home screen for all apps, with a parent area, stars and rewards, and shared services. Installable as an offline PWA. It currently contains its own versions of Uhr lesen and Einmaleins, built on the launcher's app contract. |
 | Einmaleins | [`einmaleins/`](einmaleins/) | Multiplication 1–10 × 1–10 with three help levels (dot array and tips down to plain recall) and Leitner-box practice. |
 
 `index.html` at the top level is a start page that links to every app. If
