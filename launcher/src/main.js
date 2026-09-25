@@ -1,6 +1,7 @@
 import { createBackend } from './core/storage.js';
 import { createProfiles } from './core/profiles.js';
 import { createLauncherData } from './core/launcher-data.js';
+import { migrateLegacy } from './core/migrate.js';
 import { loadRegistry } from './core/registry.js';
 import { createSpeech } from './services/speech.js';
 import { createSounds } from './services/sounds.js';
@@ -16,6 +17,7 @@ const root = document.getElementById('root');
 const backend = createBackend();
 const profiles = createProfiles(backend);
 let profile = profiles.active();
+migrateLegacy(backend, profile.id);
 const data = createLauncherData(backend, profile.id);
 
 // Shared launcher context passed to every screen.

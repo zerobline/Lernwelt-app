@@ -27,14 +27,15 @@ lernwelt/
   src/
     main.js              boot + router (Home is always the bottom history entry)
     theme.css            shared colors, fonts, buttons, number pad, dialogs
-    core/                storage, profiles, stars/rewards, session log, app registry
+    core/                storage, profiles, stars/rewards, session log, app registry,
+                         import of progress from the old standalone apps (migrate.js)
     services/            speech (de-DE), sounds, per-app services object
     ui/                  h() DOM helper, icons, number pad, dialogs, form fields, top bar
     screens/             home, app host, collection, parent gate, parent area
   apps/
     index.json           registry: list of app folders
-    uhr-lesen/           manifest.json, index.js, clock.js, style.css, icon.svg
-    einmaleins/          manifest.json, index.js, logic.js, style.css, icon.svg
+    uhr-lesen/           manifest.json, index.js, time-phrase.js, clock.js, style.css, icon.svg
+    einmaleins/          manifest.json, index.js, logic.js, tips.js, style.css, icon.svg
   tests/                 node --test
   tools/                 dev server, icon rendering
 ```
@@ -57,7 +58,7 @@ You don't have to change any launcher code.
   "color": "#F4A340",
   "order": 2,
   "version": "1.0.0",
-  "files": ["style.css", "logic.js"]
+  "files": ["style.css", "logic.js", "tips.js"]
 }
 ```
 
@@ -65,6 +66,9 @@ You don't have to change any launcher code.
 `entry` is optional and defaults to `index.js`.
 `files` is also optional: it lists extra files the service worker should cache for offline use at install time.
 Modules the entry imports are cached anyway once the launcher has loaded them.
+
+An app's stylesheet should scope every rule under one root class (`.uhr`, `.emx`), because the parent area
+loads the stylesheets of several apps at once for their progress cards.
 
 ### Entry module
 
@@ -100,7 +104,7 @@ Each app shows its own reward screen at the end of a round and then calls `servi
 - **Home:** shows "Hallo [Name]!", the star total, and a tile per visible app with an icon, name, subtitle, star counter, a "Heute geübt" badge, and a speaker button that reads the name aloud. The grid has 2, 3 or 4 columns depending on screen width.
 - **Navigation:** the browser or Android back button always returns to Home. During a running round the child is asked "Wirklich aufhören?" first. After a reload the app always starts on Home.
 - **Parent gate:** a question like 14 × 7, which is well outside the 1×1 range.
-- **Parent area:** name and avatar; show or hide apps; per-app settings; one progress card per app (Uhr: current stage; Einmaleins: 10×10 grid); daily time limit (off by default; a running round is still finished); sound and speech switches; reset progress per app. Resetting keeps the shared star total and the unlocked rewards.
+- **Parent area:** name and avatar; show or hide apps; per-app settings (Uhr: Stufe, regional forms, speech rate; Einmaleins: help level, time limit for "Keine Hilfe"); one progress card per app (Uhr: which kinds of times go wrong, types of mistakes, last rounds; Einmaleins: 10×10 grid of Leitner boxes); daily time limit (off by default; a running round is still finished); sound and speech switches; reset progress per app. Resetting keeps the shared star total and the unlocked rewards.
 - **Rewards:** every 20 stars unlocks a figure, a background or a sticker ("Meine Sammlung", reached by tapping the star counter or the avatar). There is no shop and nothing to spend.
 
 ## Data layout (ready for more child profiles)
@@ -112,7 +116,8 @@ lernwelt._launcher.<profileId>.stars     { total, byApp }
 lernwelt._launcher.<profileId>.sessions  [{ appId, profileId, date, day, duration, correct, total, stars, completed }]
 lernwelt._launcher.<profileId>.usage     { "YYYY-MM-DD": { appId: seconds } }
 lernwelt._launcher.<profileId>.settings  { sound, speech, timeLimitEnabled, timeLimitMinutes }
-lernwelt.<appId>.<profileId>.*           app data
+lernwelt._launcher.legacy.<key>          backup of progress imported from the old standalone apps
+lernwelt.<appId>.<profileId>.*           app data (both apps keep everything in one "data" entry)
 ```
 
 Adding a second child only needs a profile picker. The data model already supports it.

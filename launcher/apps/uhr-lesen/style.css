@@ -1,209 +1,597 @@
+/* Uhr lesen – everything is scoped to .uhr so it cannot leak into the launcher or
+   other apps (the parent area loads several app stylesheets at once). */
 .uhr {
+  --ground: #eef5f1;
+  --card: #ffffff;
+  --card-2: #f6faf8;
+  --ink: #22314a;
+  --muted: #5b6b7e;
+  --line: #d3e0da;
+  --hour: #d9412f;
+  --minute: #2a64c8;
+  --good: #2e9d62;
+  --good-tint: #dcf2e5;
+  --oops: #c9651b;
+  --oops-tint: #fde8d6;
+  --sun: #f6b81a;
+  --sun-ink: #3a2a00;
+  --focus: #2a64c8;
+  --selected: #e3ecfb;
+  --face: #fffdf7;
+  --rim: #22314a;
+  --face-ink: #22314a;
+  --face-muted: #7c8797;
+  --q-nach-1: #cdeedb;
+  --q-nach-2: #e3f6ea;
+  --q-vor-1: #fbd9bb;
+  --q-vor-2: #fde9d6;
+  --ring: #f2f6fb;
+  --glow: #ffd23f;
+  --radius: 18px;
+  --display: var(--lw-font);
+  --reading: var(--lw-font);
+  color-scheme: light;
   flex: 1;
   display: flex;
   flex-direction: column;
-}
-
-.uhr-start,
-.uhr-question,
-.uhr-reward {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 18px;
   width: 100%;
-  max-width: 760px;
+  max-width: 1100px;
   margin: 0 auto;
+  color: var(--ink);
+  font-family: var(--display);
+  font-size: 18px;
+  line-height: 1.35;
 }
-
-.uhr-clock {
-  width: min(78vw, 46dvh, 380px);
-  aspect-ratio: 1;
+.uhr button, .uhr select, .uhr input {
+  font: inherit; color: inherit;
 }
-.uhr-face {
-  width: 100%;
-  height: 100%;
-  filter: drop-shadow(0 8px 0 rgba(36, 48, 73, 0.12));
+.uhr button {
+  cursor: pointer; touch-action: manipulation;
 }
-.uhr-num {
-  font: 800 17px var(--lw-font);
-  fill: #243049;
-  text-anchor: middle;
-  dominant-baseline: central;
+.uhr * {
+  box-sizing: border-box;
 }
-.uhr-min {
-  font: 700 9px var(--lw-font);
-  fill: #a06b00;
-  text-anchor: middle;
-  dominant-baseline: central;
+.uhr [hidden] {
+  display: none !important;
 }
-
-.uhr-stage-name {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 1.4rem;
-  font-weight: 800;
-  text-align: center;
+.uhr select, .uhr input {
+  font: inherit; color: inherit;
 }
-
-.uhr-stages {
-  display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
-  justify-content: center;
+.uhr :focus-visible {
+  outline: 3px solid var(--focus); outline-offset: 3px;
 }
-.uhr-stage {
-  width: 56px;
-  height: 56px;
+.uhr .screen {
+  display: flex; flex-direction: column; gap: 18px; flex: 1;
+}
+.uhr .btn-go {
   border: 0;
-  border-radius: 50%;
-  background: #fff;
+  border-radius: 999px;
+  background: var(--sun);
+  color: var(--sun-ink);
+  font-weight: 800;
   font-size: 1.5rem;
-  font-weight: 900;
-  box-shadow: var(--lw-shadow-small), inset 0 0 0 3px var(--lw-line);
-  cursor: pointer;
+  padding: 14px 36px;
+  min-height: 64px;
+  box-shadow: 0 5px 0 #c98f00;
+  transition: transform .08s, box-shadow .08s;
 }
-.uhr-stage.is-on {
-  background: var(--app-color);
-  color: #fff;
-  box-shadow: var(--lw-shadow-small);
+.uhr .btn-go:active {
+  transform: translateY(4px); box-shadow: 0 1px 0 #c98f00;
 }
-.uhr-stage.is-locked {
-  font-size: 1.1rem;
-  opacity: 0.6;
-  cursor: default;
-}
-
-.uhr-speak {
-  flex: none;
-  display: inline-grid;
-  place-items: center;
-  width: 44px;
-  height: 44px;
-  border: 0;
-  border-radius: 50%;
-  background: color-mix(in srgb, var(--app-color) 18%, #fff);
-  color: color-mix(in srgb, var(--app-color) 60%, #000 30%);
-  font-size: 24px;
-  cursor: pointer;
-}
-
-.uhr-question__clock .uhr-clock {
-  width: min(72vw, 40dvh, 360px);
-}
-.uhr-question__text {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  font-size: 1.6rem;
-  font-weight: 900;
-}
-
-.uhr-options {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 12px;
-  width: 100%;
-}
-.uhr-option {
-  position: relative;
-}
-.uhr-option__btn {
-  width: 100%;
-  min-height: 78px;
-  padding: 10px 50px 10px 14px;
-  border: 0;
-  border-radius: 20px;
-  background: #fff;
-  font-size: clamp(1.2rem, 4.6vw, 1.7rem);
-  font-weight: 800;
-  box-shadow: 0 5px 0 #cfd8e6, inset 0 0 0 3px var(--lw-line);
-  cursor: pointer;
-}
-.uhr-option__btn:active {
-  transform: translateY(3px);
-  box-shadow: 0 2px 0 #cfd8e6, inset 0 0 0 3px var(--lw-line);
-}
-.uhr-option__btn[disabled] {
-  cursor: default;
-  color: var(--lw-text);
-}
-.uhr-option__speak {
-  position: absolute;
-  right: 8px;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 38px;
-  height: 38px;
-  font-size: 20px;
-}
-.uhr-option.is-right .uhr-option__btn {
-  background: var(--lw-success-bg);
-  box-shadow: 0 5px 0 #9bd9b5, inset 0 0 0 4px var(--lw-success);
-}
-.uhr-option.is-wrong .uhr-option__btn {
-  background: var(--lw-danger-bg);
-  box-shadow: 0 5px 0 #f1b3b0, inset 0 0 0 4px var(--lw-danger);
-  animation: lw-shake 0.4s ease;
-}
-
-.uhr-reward {
-  justify-content: center;
-  text-align: center;
-}
-.uhr-reward h1 {
-  margin: 0;
-  font-size: clamp(2rem, 7vw, 2.8rem);
-}
-.uhr-reward__emoji {
-  font-size: 84px;
-  line-height: 1;
-  animation: lw-bounce 1.2s ease infinite;
-}
-.uhr-reward__score {
-  margin: 0;
-  font-size: 1.4rem;
-  font-weight: 800;
-}
-.uhr-levelup {
-  padding: 12px 20px;
-  border-radius: 18px;
-  background: #fff5d6;
-  font-size: 1.2rem;
-  box-shadow: inset 0 0 0 3px #ffe08a;
-}
-.uhr-reward__actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 14px;
-  justify-content: center;
-}
-
-/* progress card in the parent area */
-.uhr-summary {
-  margin: 0;
-  padding: 0;
-  list-style: none;
-  display: grid;
-  gap: 4px;
-}
-.uhr-summary li {
-  display: flex;
-  justify-content: space-between;
-  gap: 8px;
-  padding: 6px 10px;
-  border-radius: 10px;
-  background: #fff;
-  color: var(--lw-muted);
-}
-.uhr-summary li.is-done {
-  color: var(--lw-success);
+.uhr .btn-soft {
+  border: 2px solid var(--line);
+  background: var(--card);
+  border-radius: 999px;
+  padding: 10px 22px;
+  min-height: 52px;
   font-weight: 700;
 }
-.uhr-summary li.is-current {
-  color: var(--lw-text);
+.uhr .btn-check {
+  border: 0;
+  border-radius: 999px;
+  background: var(--good);
+  color: #fff;
   font-weight: 800;
-  box-shadow: inset 0 0 0 2px var(--app-color);
+  font-size: 1.25rem;
+  padding: 10px 30px;
+  min-height: 56px;
+}
+.uhr .btn-check:disabled {
+  opacity: .4; cursor: default;
+}
+.uhr .row-actions {
+  display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; align-items: center;
+}
+.uhr .icon-btn {
+  width: 52px; height: 52px; border-radius: 50%;
+  border: 2px solid var(--line); background: var(--card);
+  display: grid; place-items: center; flex: none;
+}
+.uhr .icon-btn svg {
+  width: 22px; height: 22px; stroke: var(--ink); stroke-width: 3; stroke-linecap: round; fill: none;
+}
+.uhr .speak-btn {
+  flex: none;
+  width: 48px; height: 48px; border-radius: 50%;
+  border: 0; background: var(--selected);
+  display: grid; place-items: center;
+}
+.uhr .speak-btn svg {
+  width: 26px; height: 26px; fill: var(--minute);
+}
+.uhr .start-head {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+}
+.uhr .brand {
+  margin: 0;
+  font-size: clamp(2.2rem, 7vw, 3.2rem);
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -.01em;
+}
+.uhr .brand::before {
+  content: "";
+  display: inline-block;
+  width: .8em; height: .8em;
+  margin-right: .25em;
+  vertical-align: -.08em;
+  border-radius: 50%;
+  border: .09em solid currentColor;
+  background:
+  linear-gradient(var(--hour), var(--hour)) 50% 30% / .09em .3em no-repeat,
+  linear-gradient(var(--minute), var(--minute)) 70% 50% / .3em .07em no-repeat,
+  var(--face);
+}
+.uhr .pick-group {
+  display: flex; flex-direction: column; gap: 8px;
+}
+.uhr .pick-title {
+  margin: 0; font-size: 1.15rem; font-weight: 700; color: var(--muted);
+}
+.uhr .pick-row {
+  display: grid; gap: 10px;
+}
+.uhr .pick-row-3 {
+  grid-template-columns: repeat(3, 1fr);
+}
+.uhr .pick-row-5 {
+  grid-template-columns: repeat(5, 1fr);
+}
+@media (max-width: 620px) {
+  .uhr .pick-row-5 {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+.uhr .pick {
+  display: flex; flex-direction: column; align-items: center; justify-content: flex-start; gap: 4px;
+  border: 3px solid var(--line);
+  background: var(--card);
+  border-radius: var(--radius);
+  padding: 10px 6px 12px;
+  min-height: 72px;
+  text-align: center;
+  transition: border-color .12s, background .12s;
+}
+.uhr .pick[aria-pressed="true"] {
+  border-color: var(--minute); background: var(--selected);
+}
+.uhr .pick-label {
+  font-weight: 700; font-size: 1.05rem; line-height: 1.1;
+}
+.uhr .pick-example {
+  font-family: var(--reading); font-size: .82rem; color: var(--muted); line-height: 1.2;
+}
+.uhr .mini-clock {
+  width: min(92px, 22vw); aspect-ratio: 1; max-width: 100%; display: block;
+}
+.uhr .mini-clock svg {
+  width: 100%; height: 100%;
+}
+.uhr .stufe-num {
+  font-size: 1.7rem; font-weight: 800; line-height: 1;
+  width: 44px; height: 44px; border-radius: 50%;
+  display: grid; place-items: center;
+  background: var(--card-2); border: 2px solid var(--line);
+}
+.uhr .pick[aria-pressed="true"] .stufe-num {
+  background: var(--minute); color: #fff; border-color: var(--minute);
+}
+.uhr .dots {
+  display: flex; gap: 5px; height: 20px; align-items: center;
+}
+.uhr .dots i {
+  width: 14px; height: 14px; border-radius: 50%; background: var(--sun); display: block;
+}
+.uhr #start-session {
+  align-self: center; margin-top: 4px; min-width: min(320px, 100%);
+}
+.uhr .suggest-banner {
+  background: var(--good-tint); border-radius: var(--radius);
+  padding: 12px 16px; display: flex; flex-wrap: wrap; gap: 10px 16px;
+  align-items: center; justify-content: space-between;
+}
+.uhr .suggest-banner p {
+  margin: 0; font-weight: 700;
+}
+.uhr .quiz-head {
+  display: flex; align-items: center; gap: 14px;
+}
+.uhr .progress {
+  list-style: none; margin: 0; padding: 0; display: flex; gap: 3px; flex: 1; flex-wrap: wrap;
+}
+.uhr .progress li {
+  width: 25px; height: 25px; flex: none;
+  display: grid; place-items: center;
+}
+.uhr .progress li svg {
+  width: 100%; height: 100%;
+}
+.uhr .progress li .star-empty {
+  fill: none; stroke: var(--line); stroke-width: 2;
+}
+.uhr .progress li.current .star-empty {
+  stroke: var(--ink);
+}
+.uhr .progress li .star-full {
+  fill: var(--sun); stroke: #c98f00; stroke-width: 1.5;
+}
+.uhr .progress li .star-silver {
+  fill: #c9d3de; stroke: #8d9aaa; stroke-width: 1.5;
+}
+.uhr .progress li.pop svg {
+  animation: uhr-pop .5s ease-out;
+}
+.uhr .quiz-body {
+  flex: 1;
+  display: grid;
+  gap: 12px;
+  grid-template-columns: 1fr;
+  align-content: start;
+}
+.uhr .clock-wrap {
+  display: flex; flex-direction: column; align-items: center; gap: 6px;
+}
+.uhr .clock-holder {
+  width: min(92vw, 40dvh, 460px); aspect-ratio: 1; max-width: 100%;
+}
+.uhr .help-note {
+  margin: 0; font-size: .95rem; color: var(--muted); text-align: center;
+  background: var(--card); border-radius: 999px; padding: 4px 14px;
+}
+.uhr .answer-area {
+  display: flex; flex-direction: column; gap: 12px;
+}
+@media (orientation: landscape) and (min-width: 640px) {
+  .uhr .quiz-body {
+    grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr); align-items: center;
+  }
+  .uhr .clock-holder {
+    width: min(46vw, 78dvh, 520px);
+  }
+}
+.uhr .prompt {
+  display: flex; align-items: center; justify-content: center; gap: 12px;
+}
+.uhr .prompt-text {
+  margin: 0; font-size: clamp(1.4rem, 4.6vw, 2rem); font-weight: 800; text-align: center;
+  text-wrap: balance;
+}
+.uhr .prompt-text .target {
+  font-family: var(--reading); font-weight: 700; color: var(--minute); display: block;
+}
+.uhr .choices {
+  display: flex; flex-direction: column; gap: 10px;
+}
+.uhr .choice {
+  display: flex; gap: 8px; align-items: stretch;
+}
+.uhr .choice-btn {
+  flex: 1;
+  border: 3px solid var(--line);
+  background: var(--card);
+  border-radius: var(--radius);
+  padding: 12px 16px;
+  min-height: 64px;
+  font-family: var(--reading);
+  font-weight: 700;
+  font-size: clamp(1.25rem, 4.4vw, 1.6rem);
+  text-align: left;
+}
+.uhr .choice .speak-btn {
+  height: auto; width: 60px; border-radius: var(--radius);
+}
+.uhr .choice-btn.wrong {
+  border-color: var(--oops); background: var(--oops-tint); text-decoration: line-through; opacity: .7;
+}
+.uhr .choice-btn.right {
+  border-color: var(--good); background: var(--good-tint);
+}
+.uhr .tiles-wrap {
+  display: flex; flex-direction: column; gap: 12px;
+}
+.uhr .tiles-wrap .row-actions {
+  flex-wrap: nowrap; gap: 8px;
+}
+.uhr .tiles-wrap .row-actions > * {
+  padding-inline: 16px;
+}
+.uhr .build {
+  min-height: 64px;
+  border: 3px dashed var(--line);
+  border-radius: var(--radius);
+  padding: 8px;
+  display: flex; flex-wrap: wrap; gap: 8px; align-items: center;
+  background: var(--card-2);
+}
+.uhr .build.wrong {
+  border-color: var(--oops); border-style: solid;
+}
+.uhr .build.right {
+  border-color: var(--good); border-style: solid; background: var(--good-tint);
+}
+.uhr .build-empty {
+  color: var(--muted); padding-inline: 8px; font-size: 1rem;
+}
+.uhr .tiles {
+  display: flex; flex-wrap: wrap; gap: 10px; justify-content: center;
+}
+.uhr .tile {
+  border: 0;
+  border-radius: 14px;
+  background: var(--card);
+  box-shadow: 0 4px 0 var(--line);
+  padding: 10px 18px;
+  min-height: 56px;
+  font-family: var(--reading);
+  font-weight: 700;
+  font-size: clamp(1.2rem, 4.2vw, 1.5rem);
+}
+.uhr .tile:active {
+  transform: translateY(3px); box-shadow: 0 1px 0 var(--line);
+}
+.uhr .tile.used {
+  visibility: hidden;
+}
+.uhr .build .tile {
+  background: var(--card); box-shadow: 0 3px 0 var(--line);
+}
+.uhr .set-wrap {
+  display: flex; flex-direction: column; gap: 14px; align-items: center;
+}
+.uhr .set-hint {
+  margin: 0; text-align: center; color: var(--muted); font-size: 1rem; max-width: 36ch;
+}
+.uhr .c-hour {
+  color: var(--hour);
+}
+.uhr .c-minute {
+  color: var(--minute);
+}
+.uhr .feedback {
+  display: flex; flex-direction: column; gap: 12px; align-items: center;
+  border-radius: var(--radius);
+  padding: 14px 16px;
+  background: var(--card);
+  text-align: center;
+}
+.uhr .feedback.good {
+  background: var(--good-tint);
+}
+.uhr .feedback.oops {
+  background: var(--oops-tint);
+}
+.uhr .feedback-msg {
+  font-size: 1.2rem; font-weight: 700;
+}
+.uhr .feedback-msg .say {
+  font-family: var(--reading); font-size: 1.5rem; display: block;
+}
+.uhr .btn-next {
+  min-width: 200px;
+}
+.uhr .shake {
+  animation: uhr-shake .4s;
+}
+@keyframes uhr-shake { 20%, 60% { transform: translateX(-8px); } 40%, 80% { transform: translateX(8px); } }
+@keyframes uhr-pop { 0% { transform: scale(.3) rotate(-30deg); } 60% { transform: scale(1.35) rotate(8deg); } 100% { transform: scale(1); } }
+.uhr .clock {
+  width: 100%; height: 100%; display: block; overflow: visible; user-select: none; -webkit-user-select: none;
+}
+.uhr .clock.interactive {
+  touch-action: none; cursor: grab;
+}
+.uhr .clock.interactive.dragging {
+  cursor: grabbing;
+}
+.uhr .clock .rim {
+  fill: var(--rim);
+}
+.uhr .clock .dial {
+  fill: var(--face);
+}
+.uhr .clock .q-nach-1 {
+  fill: var(--q-nach-1);
+}
+.uhr .clock .q-nach-2 {
+  fill: var(--q-nach-2);
+}
+.uhr .clock .q-vor-1 {
+  fill: var(--q-vor-1);
+}
+.uhr .clock .q-vor-2 {
+  fill: var(--q-vor-2);
+}
+.uhr .clock .minute-ring-edge {
+  fill: none; stroke: var(--face-muted); stroke-width: .6;
+}
+.uhr .clock .tick {
+  stroke: var(--face-muted); stroke-width: 1; stroke-linecap: round;
+}
+.uhr .clock .tick-5 {
+  stroke: var(--face-ink); stroke-width: 2.2;
+}
+.uhr .clock .minute-num {
+  fill: var(--minute); font-family: var(--display); font-weight: 700; font-size: 9px;
+  text-anchor: middle; dominant-baseline: central;
+}
+.uhr .clock .hour-num {
+  fill: var(--face-ink); font-family: var(--display); font-weight: 800; font-size: 19px;
+  text-anchor: middle; dominant-baseline: central;
+}
+.uhr .clock[data-help="wenig"] .hour-num {
+  font-size: 20px;
+}
+.uhr .clock .quarter-label {
+  fill: var(--face-ink); opacity: .75;
+  font-family: var(--display); font-weight: 700; font-size: 8px;
+  text-anchor: middle; dominant-baseline: central;
+}
+.uhr .clock .hand-line {
+  stroke-linecap: round;
+}
+.uhr .clock .hand-hour .hand-line {
+  stroke: var(--hour); stroke-width: 7.5;
+}
+.uhr .clock .hand-minute .hand-line {
+  stroke: var(--minute); stroke-width: 4.5;
+}
+.uhr .clock[data-help="keine"] .hand-line {
+  stroke: var(--face-ink);
+}
+.uhr .clock .hand-hit {
+  stroke: transparent; stroke-width: 22; stroke-linecap: round;
+}
+.uhr .clock .hand-cap {
+  fill: var(--face-ink);
+}
+.uhr .clock .hand-cap-dot {
+  fill: var(--glow);
+}
+.uhr .clock .hand-glow {
+  stroke: var(--glow); stroke-width: 18; stroke-linecap: round; opacity: 0;
+}
+.uhr .clock .hand-glow.on {
+  opacity: .9; animation: uhr-glow 1.2s ease-in-out infinite;
+}
+.uhr .clock .hour-hint {
+  fill: var(--glow); opacity: .85; animation: uhr-hint 1.8s ease-out forwards;
+}
+@keyframes uhr-glow { 50% { opacity: .45; } }
+@keyframes uhr-hint { 0% { opacity: 0; } 15% { opacity: .9; } 80% { opacity: .9; } 100% { opacity: 0; } }
+.uhr .reward {
+  display: flex; flex-direction: column; gap: 18px; align-items: center; text-align: center; padding-top: 4vh;
+}
+.uhr .reward-title {
+  margin: 0; font-size: clamp(2.2rem, 8vw, 3.2rem); font-weight: 800;
+}
+.uhr .reward-stars {
+  display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; max-width: 520px;
+}
+.uhr .reward-stars svg {
+  width: clamp(40px, 11vw, 60px); height: auto;
+}
+.uhr .reward-stars .star-full {
+  fill: var(--sun); stroke: #c98f00; stroke-width: 1.5;
+}
+.uhr .reward-stars .star-silver {
+  fill: #c9d3de; stroke: #8d9aaa; stroke-width: 1.5;
+}
+.uhr .reward-stars .star-empty {
+  fill: none; stroke: var(--line); stroke-width: 2;
+}
+.uhr .reward-stars svg {
+  animation: uhr-pop .5s ease-out both;
+}
+.uhr .reward-text {
+  margin: 0; font-size: 1.2rem; max-width: 34ch;
+}
+.uhr .suggest-card {
+  background: var(--card); border: 3px solid var(--good); border-radius: var(--radius);
+  padding: 16px; display: flex; flex-direction: column; gap: 12px; max-width: 480px;
+}
+.uhr .suggest-card p {
+  margin: 0; font-weight: 700;
+}
+.uhr .hold-btn {
+  position: relative; overflow: hidden;
+  border: 2px solid var(--ink); background: var(--card);
+  border-radius: 999px; min-height: 52px; padding: 10px 22px; font-weight: 700;
+  user-select: none; -webkit-user-select: none; touch-action: none;
+}
+.uhr .hold-fill {
+  position: absolute; inset: 0; width: 0; background: var(--good-tint);
+}
+.uhr .hold-btn.holding .hold-fill {
+  width: 100%; transition: width 1.6s linear;
+}
+.uhr .hold-label {
+  position: relative;
+}
+.uhr .hold-danger {
+  border-color: var(--oops);
+}
+.uhr .hold-danger .hold-fill {
+  background: var(--oops-tint);
+}
+.uhr .panel {
+  background: var(--card); border-radius: var(--radius); padding: 16px; display: flex; flex-direction: column; gap: 10px;
+}
+.uhr .panel h3 {
+  margin: 0; font-size: 1.2rem;
+}
+.uhr .panel-note {
+  margin: 0; color: var(--muted); font-size: .9rem;
+}
+.uhr .stat-row {
+  display: grid; grid-template-columns: minmax(0, 1fr) 90px; gap: 4px 12px; align-items: center;
+  padding-block: 6px; border-bottom: 1px solid var(--line);
+}
+.uhr .stat-row:last-child {
+  border-bottom: 0;
+}
+.uhr .stat-name {
+  font-weight: 700;
+}
+.uhr .stat-nums {
+  text-align: right; font-variant-numeric: tabular-nums; color: var(--muted);
+}
+.uhr .stat-bar {
+  grid-column: 1 / -1; height: 8px; border-radius: 4px; background: var(--card-2); overflow: hidden;
+}
+.uhr .stat-bar span {
+  display: block; height: 100%; background: var(--oops); border-radius: 4px;
+}
+.uhr .chips {
+  display: flex; flex-wrap: wrap; gap: 8px;
+}
+.uhr .chip {
+  background: var(--card-2); border: 1px solid var(--line); border-radius: 999px; padding: 4px 12px; font-size: .9rem;
+}
+.uhr .hist {
+  width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums;
+}
+.uhr .hist-wrap {
+  overflow-x: auto;
+}
+.uhr .hist th, .uhr .hist td {
+  text-align: left; padding: 6px 8px; border-bottom: 1px solid var(--line); white-space: nowrap;
+}
+.uhr .hist th {
+  color: var(--muted); font-weight: 700; font-size: .85rem;
+}
+@media (prefers-reduced-motion: reduce) {
+  .uhr *, .uhr *::before, .uhr *::after {
+    animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important;
+  }
+  .uhr .hold-btn.holding .hold-fill {
+    transition-duration: 1.6s !important;
+  }
+}
+.uhr--summary {
+  gap: 10px;
+  font-size: 1rem;
+}
+.uhr--summary .panel {
+  padding: 0;
+  background: none;
 }
