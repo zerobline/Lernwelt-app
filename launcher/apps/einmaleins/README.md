@@ -8,7 +8,7 @@ the Lernwelt launcher; see [`../../README.md`](../../README.md) for the app cont
 | `index.js` | Screens and the launcher contract (`mount`, `unmount`, `SettingsScreen`, `ProgressSummary`) |
 | `tips.js` | `tip(a, b)`, the pure strategy-tip function, plus `maskTip` and `speakable` |
 | `logic.js` | Facts, Leitner boxes, session building, answer options, level-up rule (pure) |
-| `style.css` | Squared exercise-book look, scoped to `.emx` |
+| `style.css` | Styles, scoped to `.emx`; colors and fonts come from the launcher theme |
 
 Tests: `tests/einmaleins.test.mjs` in the launcher (including `tip()` for all 100 facts).
 

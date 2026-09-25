@@ -69,6 +69,12 @@ function starPath(cx, cy, R, r) {
   return pts.join(' ');
 }
 
+const PROGRESS_STAR = 'M12 2.5l2.9 6 6.6.9-4.8 4.6 1.2 6.5L12 17.4l-5.9 3.1 1.2-6.5L2.5 9.4l6.6-.9z';
+
+function progressStar(mark) {
+  return `<svg viewBox="0 0 24 24" aria-hidden="true"><path class="${mark === 'ok' ? 'star-full' : 'star-empty'}" d="${PROGRESS_STAR}"/></svg>`;
+}
+
 function star() {
   return `<svg viewBox="0 0 100 100" aria-hidden="true"><polygon fill="var(--sun)" stroke="var(--sun-deep)" stroke-width="3" stroke-linejoin="round" points="${starPath(50, 53, 47, 21)}"/></svg>`;
 }
@@ -360,8 +366,11 @@ export function mount(container, services) {
     const p = a * b;
     const done = run.state !== 'ask';
 
-    const pips = run.queue.map((c, i) => `<span class="pip ${run.marks[i] || (i === run.i ? 'now' : '')}"></span>`).join('');
-    const bar = `<header class="bar"><div class="pips" aria-hidden="true">${pips}</div><span class="count">${Math.min(run.i + 1, run.queue.length)} / ${run.queue.length}</span></header>`;
+    // One star per card, like the progress row in Uhr lesen.
+    const stars = run.queue
+      .map((c, i) => `<li class="${i === run.i ? 'current' : ''}">${progressStar(run.marks[i])}</li>`)
+      .join('');
+    const bar = `<header class="bar"><ol class="progress" aria-hidden="true">${stars}</ol><span class="count">${Math.min(run.i + 1, run.queue.length)} / ${run.queue.length}</span></header>`;
 
     const slotText = run.state === 'ask' ? (run.level === 1 ? '?' : run.input || '?') : String(p);
     const slotEmpty = run.state === 'ask' && (run.level === 1 || !run.input);

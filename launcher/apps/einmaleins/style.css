@@ -1,26 +1,25 @@
-/* Einmaleins – squared school exercise book look. Everything is scoped to .emx
-   so it cannot leak into the launcher or other apps (the parent area loads
-   several app stylesheets at once). */
+/* Einmaleins – everything is scoped to .emx so it cannot leak into the launcher or
+   other apps (the parent area loads several app stylesheets at once). Colors, fonts
+   and button styles follow the shared Lernwelt theme (src/theme.css). */
 .emx {
-  --paper: #F7FAFD;
-  --grid: #DCE7F3;
-  --surface: #FFFFFF;
-  --surface-2: #EEF3FA;
-  --line: #C8D5E6;
-  --ink: #1B2A4A;
-  --ink-soft: #5A6B88;
-  --accent: #2B59C3;
-  --accent-deep: #1D3F8F;
-  --accent-soft: #DCE6FA;
-  --on-accent: #FFFFFF;
-  --sun: #FFB703;
-  --sun-deep: #D98E00;
-  --good: #2E9E57;
-  --good-soft: #DDF3E4;
-  --bad: #D9483B;
-  --bad-soft: #FBE3E0;
-  --dot: #A9BCD8;
-  --dot-on: #2B59C3;
+  --surface: var(--lw-surface);
+  --surface-2: var(--lw-surface-2);
+  --line: var(--lw-line);
+  --ink: var(--lw-text);
+  --ink-soft: var(--lw-muted);
+  --accent: var(--lw-primary);
+  --accent-deep: var(--lw-primary-dark);
+  --accent-soft: var(--lw-selected);
+  --sun: var(--lw-sun);
+  --sun-deep: var(--lw-sun-dark);
+  --sun-ink: var(--lw-sun-ink);
+  --good: var(--lw-success);
+  --good-soft: var(--lw-success-bg);
+  --bad: var(--lw-warning);
+  --bad-soft: var(--lw-warning-bg);
+  --dot: #b3c4bc;
+  --dot-on: var(--lw-primary);
+  /* Leitner boxes 0 (new) to 5 (sitzt): a red-to-green scale. */
   --b0: #F6D8D3;
   --on-b0: #8A4B43;
   --b1: #E4573D;
@@ -29,9 +28,9 @@
   --b4: #9CCB4F;
   --b5: #3AA35B;
   --on-box: #1B2433;
-  --shadow: 0 2px 0 rgba(27, 42, 74, .06), 0 10px 24px -14px rgba(27, 42, 74, .35);
-  --radius: 18px;
+  --radius: var(--lw-radius);
   --font: var(--lw-font);
+  --reading: var(--lw-reading);
   color-scheme: light;
   flex: 1;
   display: flex;
@@ -70,32 +69,36 @@
   display: flex; flex-direction: column; gap: 18px; flex: 1;
 }
 .emx .narrow {
-  width: 100%; max-width: 760px; margin: 0 auto;
+  width: 100%; margin: 0 auto;
 }
 .emx .btn {
   display: inline-flex; align-items: center; justify-content: center; gap: 10px;
   min-height: 56px; padding: 8px 20px;
   background: var(--surface);
-  border: 2px solid var(--line);
-  border-bottom-width: 5px;
+  border: 3px solid var(--line);
   border-radius: var(--radius);
   font-weight: 700; font-size: 20px;
-  transition: transform .06s, border-bottom-width .06s;
+  transition: transform .08s, box-shadow .08s, border-color .08s, background .08s;
 }
 .emx .btn:active {
-  transform: translateY(3px); border-bottom-width: 2px;
+  transform: translateY(2px); border-color: var(--accent); background: var(--accent-soft);
 }
 .emx .btn:disabled {
   opacity: .45; cursor: default;
 }
-.emx .btn.primary {
-  background: var(--accent); color: var(--on-accent); border-color: var(--accent-deep);
-}
 .emx .btn.big {
-  min-height: 72px; font-size: 28px; padding-inline: 28px;
+  min-height: 64px; font-size: 26px; padding-inline: 32px;
+  border-width: 2px; border-radius: 999px;
+}
+.emx .btn.primary {
+  border-color: transparent; background: var(--sun); color: var(--sun-ink); font-weight: 800;
+  box-shadow: 0 5px 0 var(--sun-deep);
+}
+.emx .btn.primary:active {
+  transform: translateY(4px); box-shadow: 0 1px 0 var(--sun-deep); background: var(--sun); border-color: transparent;
 }
 .emx .btn.icon {
-  width: 56px; padding: 0;
+  width: 52px; min-height: 52px; padding: 0; border-width: 2px; border-radius: 50%;
 }
 .emx .btn svg {
   width: 28px; height: 28px;
@@ -113,7 +116,7 @@
   display: flex; gap: 10px;
 }
 .emx .section-title {
-  font-size: 15px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: var(--ink-soft); margin-bottom: 8px;
+  font-size: 1.15rem; font-weight: 700; color: var(--ink-soft); margin-bottom: 8px;
 }
 .emx .levels {
   display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;
@@ -122,7 +125,8 @@
   display: flex; flex-direction: column; align-items: center; gap: 4px; text-align: center;
   padding: 12px 8px 10px;
   background: var(--surface);
-  border: 2px solid var(--line); border-bottom-width: 5px; border-radius: var(--radius);
+  border: 3px solid var(--line); border-radius: var(--radius);
+  transition: border-color .12s, background .12s;
 }
 .emx .level svg {
   width: 64px; height: 48px;
@@ -131,10 +135,10 @@
   font-size: 20px; line-height: 1.1;
 }
 .emx .level span {
-  font-size: 14px; color: var(--ink-soft); line-height: 1.2;
+  font-family: var(--reading); font-size: 14px; color: var(--ink-soft); line-height: 1.2;
 }
 .emx .level[aria-pressed="true"] {
-  border-color: var(--accent); background: var(--accent-soft); box-shadow: inset 0 0 0 2px var(--accent);
+  border-color: var(--accent); background: var(--accent-soft);
 }
 .emx .chips {
   display: grid; grid-template-columns: repeat(auto-fill, minmax(84px, 1fr)); gap: 10px;
@@ -143,14 +147,15 @@
   position: relative; display: flex; flex-direction: column; align-items: center; gap: 4px;
   padding: 8px 6px 10px;
   background: var(--surface);
-  border: 2px solid var(--line); border-bottom-width: 5px; border-radius: 16px;
+  border: 3px solid var(--line); border-radius: var(--radius);
   font-size: 24px; font-weight: 800; line-height: 1;
+  transition: border-color .12s, background .12s;
 }
 .emx .chip.mixed {
   grid-column: 1 / -1; flex-direction: row; justify-content: center; font-size: 22px; min-height: 52px;
 }
 .emx .chip[aria-pressed="true"] {
-  border-color: var(--accent); background: var(--accent-soft); box-shadow: inset 0 0 0 2px var(--accent);
+  border-color: var(--accent); background: var(--accent-soft);
 }
 .emx .meter {
   display: flex; width: 100%; max-width: 60px; height: 6px; border-radius: 3px; overflow: hidden; background: var(--b0);
@@ -165,25 +170,28 @@
   width: 100%; max-width: 420px;
 }
 .emx .hint-line {
-  font-size: 15px; color: var(--ink-soft);
+  font-family: var(--reading); font-size: 15px; color: var(--ink-soft);
 }
 .emx .bar {
   display: flex; align-items: center; gap: 12px;
 }
-.emx .pips {
-  flex: 1; display: flex; gap: 4px;
+.emx .progress {
+  list-style: none; margin: 0; padding: 0; display: flex; gap: 3px; flex: 1; flex-wrap: wrap;
 }
-.emx .pip {
-  flex: 1; height: 10px; border-radius: 5px; background: var(--line);
+.emx .progress li {
+  width: 25px; height: 25px; flex: none; display: grid; place-items: center;
 }
-.emx .pip.ok {
-  background: var(--good);
+.emx .progress svg {
+  width: 100%; height: 100%;
 }
-.emx .pip.bad {
-  background: var(--bad);
+.emx .progress .star-empty {
+  fill: none; stroke: var(--line); stroke-width: 2;
 }
-.emx .pip.now {
-  background: var(--accent);
+.emx .progress li.current .star-empty {
+  stroke: var(--ink);
+}
+.emx .progress .star-full {
+  fill: var(--sun); stroke: var(--sun-deep); stroke-width: 1.5;
 }
 .emx .count {
   font-weight: 700; color: var(--ink-soft); min-width: 3.5em; text-align: right;
@@ -197,8 +205,7 @@
 .emx .card {
   position: relative; overflow: hidden;
   background: var(--surface);
-  border: 2px solid var(--line); border-radius: 26px;
-  box-shadow: var(--shadow);
+  border: 3px solid var(--line); border-radius: var(--radius);
   padding: 14px 16px 20px;
   display: flex; flex-direction: column; align-items: center; gap: 8px;
 }
@@ -237,7 +244,7 @@
   align-self: flex-end; margin: -8px -6px -14px 0;
 }
 .emx .say {
-  width: 44px; height: 44px; border-radius: 50%; border: 0; background: var(--surface-2); display: grid; place-items: center;
+  flex: none; width: 48px; height: 48px; border-radius: 50%; border: 0; background: var(--accent-soft); color: var(--accent); display: grid; place-items: center;
 }
 .emx .say svg {
   width: 24px; height: 24px;
@@ -257,11 +264,11 @@
 @keyframes emx-star { 0% { transform: scale(.2) rotate(-30deg); opacity: 0; } 35% { transform: scale(1.15) rotate(8deg); opacity: 1; } 70% { transform: scale(1) rotate(0); opacity: 1; } 100% { transform: scale(1.4) translateY(-40px); opacity: 0; } }
 .emx .panel {
   background: var(--surface);
-  border: 2px solid var(--line); border-radius: var(--radius);
+  border: 3px solid var(--line); border-radius: var(--radius);
   padding: 12px;
 }
 .emx .panel-label {
-  font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: var(--ink-soft); margin-bottom: 4px;
+  font-size: 16px; font-weight: 700; color: var(--ink-soft); margin-bottom: 4px;
 }
 .emx .dots-wrap {
   display: flex; flex-direction: column; align-items: center; gap: 4px;
@@ -291,7 +298,7 @@
   display: none;
 }
 .emx .tap-hint {
-  font-size: 14px; color: var(--ink-soft);
+  font-family: var(--reading); font-size: 14px; color: var(--ink-soft);
 }
 .emx .nline {
   width: 100%; height: auto;
@@ -321,7 +328,7 @@
   display: flex; align-items: flex-start; gap: 10px; background: var(--accent-soft); border-color: transparent;
 }
 .emx .tip p {
-  font-size: 21px; font-weight: 600; line-height: 1.3; padding-top: 6px; flex: 1;
+  font-family: var(--reading); font-size: 21px; font-weight: 700; line-height: 1.3; padding-top: 6px; flex: 1;
 }
 .emx .choices {
   display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
@@ -342,13 +349,16 @@
   min-height: 66px; font-size: 34px; font-weight: 800;
 }
 .emx .pad .ok {
-  background: var(--good); border-color: color-mix(in srgb, var(--good) 70%, #000); color: #fff;
+  background: var(--good); border-color: transparent; color: #fff;
+}
+.emx .pad .ok:active {
+  background: var(--lw-success-dark); border-color: transparent;
 }
 .emx .pad .del svg {
   width: 34px; height: 34px;
 }
 .emx .hint-btn {
-  width: 100%; background: var(--sun); border-color: var(--sun-deep); color: #3A2A00;
+  width: 100%; border-width: 2px; border-color: #f3d98a; border-radius: 999px; background: var(--lw-sun-tint); color: var(--sun-ink);
 }
 .emx .hint-btn svg {
   width: 30px; height: 30px;
@@ -357,13 +367,14 @@
   width: 100%;
 }
 .emx .feedback {
+  padding: 14px 16px; border-radius: var(--radius);
   font-size: 24px; font-weight: 800; text-align: center;
 }
 .emx .feedback.good {
-  color: var(--good);
+  background: var(--good-soft);
 }
 .emx .feedback.bad {
-  color: var(--bad);
+  background: var(--bad-soft);
 }
 @media (min-width: 720px) and (orientation: landscape), (min-width: 900px) {
   .emx .stage {
@@ -397,7 +408,7 @@
   width: 100%; height: 100%; filter: drop-shadow(0 6px 0 var(--sun-deep)); animation: emx-star-in .7s cubic-bezier(.3,1.6,.5,1);
 }
 .emx .trophy b {
-  position: absolute; inset: 0; display: grid; place-items: center; padding-top: 16px; font-size: 54px; font-weight: 800; color: #3A2A00;
+  position: absolute; inset: 0; display: grid; place-items: center; padding-top: 16px; font-size: 54px; font-weight: 800; color: var(--sun-ink);
 }
 @keyframes emx-star-in { from { transform: scale(.3) rotate(-40deg); } }
 .emx .reward h1 {
@@ -425,7 +436,7 @@
   padding: 2px 12px; border-radius: 12px; background: var(--bad-soft); color: var(--ink); font-weight: 700; font-size: 20px;
 }
 .emx .parent-box {
-  border: 2px dashed var(--accent); background: var(--surface);
+  border: 3px dashed var(--accent); background: var(--surface);
 }
 .emx .parent-box p {
   margin-bottom: 10px;
@@ -434,7 +445,7 @@
   display: flex; flex-wrap: wrap; gap: 10px;
 }
 .emx .btn-row .btn {
-  flex: 1 1 180px;
+  flex: 1 1 180px; border-radius: 999px;
 }
 .emx .page-head {
   display: flex; align-items: center; gap: 12px;

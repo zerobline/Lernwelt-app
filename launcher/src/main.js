@@ -56,6 +56,7 @@ const ROUTES = [
 let current = null;
 let leaving = false;
 let confirming = false;
+let updateReady = false;
 
 function show(hash) {
   try {
@@ -78,7 +79,11 @@ function show(hash) {
     history.replaceState({ depth: 0 }, '', hash);
     factory = ROUTES[0][1];
   }
-  if (hash === '#/') ctx.parentUnlocked = false;
+  if (hash === '#/') {
+    // A new version was installed while the child was in an app: load it now, on Home.
+    if (updateReady) return location.reload();
+    ctx.parentUnlocked = false;
+  }
   const screen = factory(match);
   current = { hash, depth: history.state?.depth ?? 0, screen };
   root.append(screen.el);
@@ -153,6 +158,15 @@ async function boot() {
   (window.requestIdleCallback ?? ((f) => setTimeout(f, 1500)))(warm);
 
   if ('serviceWorker' in navigator && location.protocol !== 'file:') {
+    // The service worker answers from its cache first, so after an update this page still
+    // runs the old files. When the new worker takes over, reload once (right away on Home,
+    // otherwise the next time Home is shown, never in the middle of a round).
+    const hadController = !!navigator.serviceWorker.controller;
+    navigator.serviceWorker.addEventListener('controllerchange', () => {
+      if (!hadController || updateReady) return;
+      updateReady = true;
+      if (current?.hash === '#/') location.reload();
+    });
     navigator.serviceWorker.register(new URL('../sw.js', import.meta.url), { scope: new URL('../', import.meta.url).pathname }).catch((err) => console.warn('[lernwelt] Service Worker:', err));
   }
 }
