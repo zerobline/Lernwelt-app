@@ -46,6 +46,10 @@ const CORE = [
   'apps/index.json',
 ];
 
+// Always ask the server, not the browser's HTTP cache (GitHub Pages lets files be cached
+// for 10 minutes), so a new version is never stored with old files mixed in.
+const fresh = (url) => new Request(url, { cache: 'reload' });
+
 async function appFiles() {
   try {
     const folders = await (await fetch('apps/index.json', { cache: 'no-cache' })).json();
@@ -70,9 +74,9 @@ self.addEventListener('install', (event) => {
   event.waitUntil(
     (async () => {
       const cache = await caches.open(VERSION);
-      await cache.addAll(CORE);
+      await cache.addAll(CORE.map(fresh));
       // App files are best effort: a broken app must not break the whole install.
-      await Promise.all((await appFiles()).map((url) => cache.add(url).catch(() => {})));
+      await Promise.all((await appFiles()).map((url) => cache.add(fresh(url)).catch(() => {})));
       await self.skipWaiting();
     })(),
   );
@@ -95,9 +99,10 @@ self.addEventListener('fetch', (event) => {
     (async () => {
       const cache = await caches.open(VERSION);
       const cached = await cache.match(req, { ignoreSearch: true });
-      const network = fetch(req)
+      // Navigation requests cannot take options; everything else revalidates with the server.
+      const network = (req.mode === 'navigate' ? fetch(req.url, { cache: 'no-cache' }) : fetch(req, { cache: 'no-cache' }))
         .then((res) => {
-          if (res.ok) cache.put(req, res.clone());
+          if (res.ok && !res.redirected) cache.put(req, res.clone());
           return res;
         })
         .catch(() => null);
