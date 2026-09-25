@@ -7,7 +7,7 @@ export const REWARD_STEP = 20;
 export const BASE_AVATARS = ['🦊', '🐱', '🐶', '🐻', '🐰', '🐯'];
 
 export const BACKGROUNDS = {
-  standard: { name: 'Himmel', css: 'linear-gradient(180deg, #dff1ff 0%, #f7fbff 100%)' },
+  standard: { name: 'Standard', css: '#eef5f1' },
   wiese: { name: 'Wiese', css: 'linear-gradient(180deg, #e3f7d9 0%, #fbfff6 100%)' },
   sterne: {
     name: 'Sterne',

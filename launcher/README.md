@@ -26,7 +26,8 @@ lernwelt/
   index.html, manifest.webmanifest, sw.js   PWA shell + offline cache
   src/
     main.js              boot + router (Home is always the bottom history entry)
-    theme.css            shared colors, fonts, buttons, number pad, dialogs
+    theme.css            shared design: colors, fonts, buttons, number pad, dialogs
+    fonts/               Baloo 2 and Andika (woff2, SIL Open Font License), bundled for offline use
     core/                storage, profiles, stars/rewards, session log, app registry,
                          import of progress from the old standalone apps (migrate.js)
     services/            speech (de-DE), sounds, per-app services object
@@ -69,6 +70,17 @@ Modules the entry imports are cached anyway once the launcher has loaded them.
 
 An app's stylesheet should scope every rule under one root class (`.uhr`, `.emx`), because the parent area
 loads the stylesheets of several apps at once for their progress cards.
+
+### Design
+
+The launcher and all apps share one look, defined by the `--lw-*` tokens at the top of `src/theme.css`
+(it started as the "Uhr lesen" design): a mint ground (`--lw-bg`), flat white cards with a 3px border
+(`--lw-border`, `--lw-radius`), the yellow pill for the main action (`--lw-sun`), blue for "selected"
+(`--lw-primary`, `--lw-selected`), green for "check" (`--lw-success`) and a gentle orange for mistakes
+(`--lw-warning`). Interface text uses Baloo 2 (`--lw-font`), reading text such as phrases, tips and
+examples uses Andika (`--lw-reading`). New apps should map their colors to these tokens instead of
+defining their own palette, and reuse the same patterns: `.lw-btn--primary` for the main action,
+bordered cards that turn blue when selected, a row of stars for progress in a round.
 
 ### Entry module
 

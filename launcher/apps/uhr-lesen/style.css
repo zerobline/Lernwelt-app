@@ -1,22 +1,24 @@
 /* Uhr lesen – everything is scoped to .uhr so it cannot leak into the launcher or
    other apps (the parent area loads several app stylesheets at once). */
 .uhr {
-  --ground: #eef5f1;
-  --card: #ffffff;
-  --card-2: #f6faf8;
-  --ink: #22314a;
-  --muted: #5b6b7e;
-  --line: #d3e0da;
-  --hour: #d9412f;
-  --minute: #2a64c8;
-  --good: #2e9d62;
-  --good-tint: #dcf2e5;
-  --oops: #c9651b;
-  --oops-tint: #fde8d6;
-  --sun: #f6b81a;
-  --sun-ink: #3a2a00;
-  --focus: #2a64c8;
-  --selected: #e3ecfb;
+  /* Interface colors come from the shared Lernwelt theme (src/theme.css). */
+  --ground: var(--lw-bg);
+  --card: var(--lw-surface);
+  --card-2: var(--lw-surface-2);
+  --ink: var(--lw-text);
+  --muted: var(--lw-muted);
+  --line: var(--lw-line);
+  --hour: var(--lw-danger);
+  --minute: var(--lw-primary);
+  --good: var(--lw-success);
+  --good-tint: var(--lw-success-bg);
+  --oops: var(--lw-warning);
+  --oops-tint: var(--lw-warning-bg);
+  --sun: var(--lw-sun);
+  --sun-ink: var(--lw-sun-ink);
+  --focus: var(--lw-primary);
+  --selected: var(--lw-selected);
+  /* The clock itself is a physical object with its own colors. */
   --face: #fffdf7;
   --rim: #22314a;
   --face-ink: #22314a;
@@ -27,9 +29,9 @@
   --q-vor-2: #fde9d6;
   --ring: #f2f6fb;
   --glow: #ffd23f;
-  --radius: 18px;
+  --radius: var(--lw-radius);
   --display: var(--lw-font);
-  --reading: var(--lw-font);
+  --reading: var(--lw-reading);
   color-scheme: light;
   flex: 1;
   display: flex;
@@ -72,11 +74,11 @@
   font-size: 1.5rem;
   padding: 14px 36px;
   min-height: 64px;
-  box-shadow: 0 5px 0 #c98f00;
+  box-shadow: 0 5px 0 var(--lw-sun-dark);
   transition: transform .08s, box-shadow .08s;
 }
 .uhr .btn-go:active {
-  transform: translateY(4px); box-shadow: 0 1px 0 #c98f00;
+  transform: translateY(4px); box-shadow: 0 1px 0 var(--lw-sun-dark);
 }
 .uhr .btn-soft {
   border: 2px solid var(--line);

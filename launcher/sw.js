@@ -4,7 +4,7 @@
 // - Afterwards: stale-while-revalidate – answer from cache, refresh in the background.
 // Bump VERSION when CORE changes so old caches are dropped.
 
-const VERSION = 'lernwelt-v2';
+const VERSION = 'lernwelt-v3';
 
 const CORE = [
   './',
@@ -15,6 +15,12 @@ const CORE = [
   'icons/icon-512.png',
   'icons/apple-touch-icon.png',
   'src/theme.css',
+  'src/fonts/OFL.txt',
+  'src/fonts/andika-latin-400-normal.woff2',
+  'src/fonts/andika-latin-700-normal.woff2',
+  'src/fonts/baloo-2-latin-500-normal.woff2',
+  'src/fonts/baloo-2-latin-700-normal.woff2',
+  'src/fonts/baloo-2-latin-800-normal.woff2',
   'src/main.js',
   'src/core/dates.js',
   'src/core/launcher-data.js',
